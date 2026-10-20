@@ -69,7 +69,7 @@ export function generateAgentPromptBox(
           .replace(/```/g, "'''")
           .replace(/<\/?details>/gi, '')
           .trim();
-        return `${idx + 1}. In \`${s.path}\` line ${s.line}:\nApply fix:\n\`\`\`\n${sanitized}\n\`\`\``;
+        return `${idx + 1}. In \`${s.path}\` line ${s.line}:\nApply fix:\n${sanitized}`;
       }
     )
     .join('\n\n');
