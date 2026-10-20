@@ -37,6 +37,7 @@ export interface SummaryConfig {
   buildResult?: string;
   testResult?: string;
   commentTag?: string;
+  stickyComment?: boolean;
   extraStages?: string;
   mode?: string;
 }
@@ -330,7 +331,7 @@ export async function runSummary(config: SummaryConfig = {}): Promise<string> {
   }
 
   // Update or create Sticky PR Comment
-  await updateOrCreateStickyComment(summaryMarkdown, token, repo, prNumber, commentTag);
+  await updateOrCreateStickyComment(summaryMarkdown, token, repo, prNumber, commentTag, config.stickyComment !== false);
 
   return summaryMarkdown;
 }

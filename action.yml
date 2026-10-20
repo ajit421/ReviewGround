@@ -109,6 +109,11 @@ inputs:
     required: false
     default: '<!-- reviewground-code-review -->'
 
+  sticky-comment:
+    description: 'Update the same PR comment in-place (true) or post a new comment on every run/commit (false). Default: true'
+    required: false
+    default: 'true'
+
   pr-number:
     description: 'Pull Request number (auto-detected from workflow event if omitted)'
     required: false

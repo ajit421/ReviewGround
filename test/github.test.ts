@@ -170,4 +170,48 @@ describe('PR Review Thread Outdated Folding Automation', () => {
   });
 });
 
+describe('Sticky vs Commit-by-Commit PR Comment Modes', () => {
+  it('postOrUpdatePrComment skips listing existing comments and posts directly when sticky=false', async () => {
+    const { postOrUpdatePrComment } = await import('../src/github/comments.js');
+    const originalFetch = globalThis.fetch;
+    const calls: { url: string; method?: string }[] = [];
+
+    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      calls.push({ url, method: init?.method || 'GET' });
+      return new Response(JSON.stringify({ id: 999 }), { status: 201 });
+    };
+
+    try {
+      await postOrUpdatePrComment('# Review', 'mock-token', 'owner/repo', '12', '<!-- tag -->', false);
+      assert.strictEqual(calls.length, 1);
+      assert.strictEqual(calls[0].method, 'POST');
+      assert.ok(calls[0].url.includes('/issues/12/comments'));
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('updateOrCreateStickyComment skips listing existing comments and posts directly when sticky=false', async () => {
+    const { updateOrCreateStickyComment } = await import('../src/github/stickyComment.js');
+    const originalFetch = globalThis.fetch;
+    const calls: { url: string; method?: string }[] = [];
+
+    globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      calls.push({ url, method: init?.method || 'GET' });
+      return new Response(JSON.stringify({ id: 1001 }), { status: 201 });
+    };
+
+    try {
+      await updateOrCreateStickyComment('# CI Summary', 'mock-token', 'owner/repo', '12', '<!-- tag -->', false);
+      assert.strictEqual(calls.length, 1);
+      assert.strictEqual(calls[0].method, 'POST');
+      assert.ok(calls[0].url.includes('/issues/12/comments'));
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
+
 

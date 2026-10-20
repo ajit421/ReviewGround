@@ -60,6 +60,9 @@ describe('Actionable Summary & AI Agent Prompt Box', () => {
     assert.ok(promptBox.includes('untrusted review data'));
     assert.ok(promptBox.includes('npm run typecheck'));
     assert.ok(promptBox.includes('repository guidelines'));
+    // Ensure the outer code block is not prematurely broken by inner fences
+    const fenceMatches = promptBox.match(/```/g) || [];
+    assert.strictEqual(fenceMatches.length, 2, 'prompt box should have exactly 1 unbroken code block');
   });
 
   it('returns empty prompt box when there are no suggestions, blockers, or warnings', () => {

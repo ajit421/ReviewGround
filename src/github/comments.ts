@@ -279,14 +279,17 @@ export async function postInlineSuggestions(
 }
 
 /**
- * Creates or updates the sticky PR comment in-place.
+ * Creates or updates the PR comment.
+ * If sticky is true (default), updates the existing comment in-place.
+ * If sticky is false, posts a new separate comment on every run/commit.
  */
 export async function postOrUpdatePrComment(
   markdown: string,
   token?: string,
   repo?: string,
   prNumber?: string,
-  commentTag = DEFAULT_COMMENT_TAG
+  commentTag = DEFAULT_COMMENT_TAG,
+  sticky = true
 ): Promise<void> {
   if (!token || !prNumber || !repo) {
     console.log('ℹ️  Skipping PR comment: GITHUB_TOKEN, PR_NUMBER, or REPO_FULL_NAME not provided.');
@@ -303,45 +306,47 @@ export async function postOrUpdatePrComment(
   };
 
   try {
-    let existing: { id: number; body?: string } | undefined;
-    let page = 1;
-    const MAX_PAGES = 10;
-    while (!existing && page <= MAX_PAGES) {
-      const listRes = await fetch(
-        `https://api.github.com/repos/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
-        { headers }
-      );
-      if (!listRes.ok) break;
-      const comments = (await listRes.json()) as Array<{ id: number; body?: string }>;
-      if (comments.length === 0) break;
-      existing = comments.find((c) => c.body?.includes(commentTag));
-      if (existing || comments.length < 100) break;
-      page++;
-    }
-
-    if (existing && existing.body) {
-      let commentBody = defaultCommentBody;
-
-      if (existing.body.includes(CI_SECTION_HEADER)) {
-        const ciIndex = existing.body.indexOf(CI_SECTION_HEADER);
-        const ciPart = existing.body.slice(ciIndex);
-        const tagIndex = ciPart.indexOf(commentTag);
-        const preservedCi = tagIndex !== -1 ? ciPart.slice(0, tagIndex).trimEnd() : ciPart.trimEnd();
-        commentBody = `${markdown}\n\n---\n\n${preservedCi}\n\n${commentTag}`;
+    if (sticky) {
+      let existing: { id: number; body?: string } | undefined;
+      let page = 1;
+      const MAX_PAGES = 10;
+      while (!existing && page <= MAX_PAGES) {
+        const listRes = await fetch(
+          `https://api.github.com/repos/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
+          { headers }
+        );
+        if (!listRes.ok) break;
+        const comments = (await listRes.json()) as Array<{ id: number; body?: string }>;
+        if (comments.length === 0) break;
+        existing = comments.find((c) => c.body?.includes(commentTag));
+        if (existing || comments.length < 100) break;
+        page++;
       }
 
-      const updateRes = await fetch(
-        `https://api.github.com/repos/${repo}/issues/comments/${existing.id}`,
-        {
-          method: 'PATCH',
-          headers: { ...headers, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ body: commentBody }),
-        }
-      );
+      if (existing && existing.body) {
+        let commentBody = defaultCommentBody;
 
-      if (updateRes.ok) {
-        console.log(`✅ Updated existing sticky review comment on PR #${prNumber}.`);
-        return;
+        if (existing.body.includes(CI_SECTION_HEADER)) {
+          const ciIndex = existing.body.indexOf(CI_SECTION_HEADER);
+          const ciPart = existing.body.slice(ciIndex);
+          const tagIndex = ciPart.indexOf(commentTag);
+          const preservedCi = tagIndex !== -1 ? ciPart.slice(0, tagIndex).trimEnd() : ciPart.trimEnd();
+          commentBody = `${markdown}\n\n---\n\n${preservedCi}\n\n${commentTag}`;
+        }
+
+        const updateRes = await fetch(
+          `https://api.github.com/repos/${repo}/issues/comments/${existing.id}`,
+          {
+            method: 'PATCH',
+            headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ body: commentBody }),
+          }
+        );
+
+        if (updateRes.ok) {
+          console.log(`✅ Updated existing sticky review comment on PR #${prNumber}.`);
+          return;
+        }
       }
     }
 
