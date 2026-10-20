@@ -97,6 +97,7 @@ export interface ReviewerConfig {
   buildResult?: string;
   testResult?: string;
   commentTag?: string;
+  stickyComment?: boolean;
   geminiApiKey?: string;
   openaiApiKey?: string;
   anthropicApiKey?: string;
@@ -427,7 +428,7 @@ ${cleanReviewText}${preMergeChecksBox}${testCoverageSection}${agentPromptBox}${r
   }
 
   // Post / Update Sticky PR Comment & Suggestions
-  await postOrUpdatePrComment(markdownOutput, token, repo, prNumber, commentTag);
+  await postOrUpdatePrComment(markdownOutput, token, repo, prNumber, commentTag, config.stickyComment !== false);
 
   if (config.enablePruneInlineSuggestions && token && repo && prNumber) {
     await prunePreviousInlineComments(repo, token, prNumber);

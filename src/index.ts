@@ -193,6 +193,7 @@ async function run(): Promise<void> {
       repo,
       prNumber,
       commentTag: getOptionalInput('comment-tag', ['REVIEWGROUND_COMMENT_TAG', 'COMMENT_TAG']) || undefined,
+      stickyComment: getBooleanInput('sticky-comment', ['REVIEWGROUND_STICKY_COMMENT', 'STICKY_COMMENT'], true),
       runId: getOptionalInput('run-id', ['GITHUB_RUN_ID', 'RUN_ID']) || undefined,
     };
 

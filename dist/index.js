@@ -41710,7 +41710,7 @@ ${agentPrompt}`;
     console.warn(`\u26A0\uFE0F Error posting inline suggestions: ${msg}`);
   }
 }
-async function postOrUpdatePrComment(markdown, token, repo, prNumber, commentTag = DEFAULT_COMMENT_TAG) {
+async function postOrUpdatePrComment(markdown, token, repo, prNumber, commentTag = DEFAULT_COMMENT_TAG, sticky = true) {
   if (!token || !prNumber || !repo) {
     console.log("\u2139\uFE0F  Skipping PR comment: GITHUB_TOKEN, PR_NUMBER, or REPO_FULL_NAME not provided.");
     return;
@@ -41726,47 +41726,49 @@ ${commentTag}`;
     "User-Agent": "ReviewGround-CI-Reviewer"
   };
   try {
-    let existing;
-    let page = 1;
-    const MAX_PAGES = 10;
-    while (!existing && page <= MAX_PAGES) {
-      const listRes = await fetch(
-        `https://api.github.com/repos/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
-        { headers }
-      );
-      if (!listRes.ok) break;
-      const comments = await listRes.json();
-      if (comments.length === 0) break;
-      existing = comments.find((c) => c.body?.includes(commentTag));
-      if (existing || comments.length < 100) break;
-      page++;
-    }
-    if (existing && existing.body) {
-      let commentBody = defaultCommentBody;
-      if (existing.body.includes(CI_SECTION_HEADER)) {
-        const ciIndex = existing.body.indexOf(CI_SECTION_HEADER);
-        const ciPart = existing.body.slice(ciIndex);
-        const tagIndex = ciPart.indexOf(commentTag);
-        const preservedCi = tagIndex !== -1 ? ciPart.slice(0, tagIndex).trimEnd() : ciPart.trimEnd();
-        commentBody = `${markdown}
+    if (sticky) {
+      let existing;
+      let page = 1;
+      const MAX_PAGES = 10;
+      while (!existing && page <= MAX_PAGES) {
+        const listRes = await fetch(
+          `https://api.github.com/repos/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
+          { headers }
+        );
+        if (!listRes.ok) break;
+        const comments = await listRes.json();
+        if (comments.length === 0) break;
+        existing = comments.find((c) => c.body?.includes(commentTag));
+        if (existing || comments.length < 100) break;
+        page++;
+      }
+      if (existing && existing.body) {
+        let commentBody = defaultCommentBody;
+        if (existing.body.includes(CI_SECTION_HEADER)) {
+          const ciIndex = existing.body.indexOf(CI_SECTION_HEADER);
+          const ciPart = existing.body.slice(ciIndex);
+          const tagIndex = ciPart.indexOf(commentTag);
+          const preservedCi = tagIndex !== -1 ? ciPart.slice(0, tagIndex).trimEnd() : ciPart.trimEnd();
+          commentBody = `${markdown}
 
 ---
 
 ${preservedCi}
 
 ${commentTag}`;
-      }
-      const updateRes = await fetch(
-        `https://api.github.com/repos/${repo}/issues/comments/${existing.id}`,
-        {
-          method: "PATCH",
-          headers: { ...headers, "Content-Type": "application/json" },
-          body: JSON.stringify({ body: commentBody })
         }
-      );
-      if (updateRes.ok) {
-        console.log(`\u2705 Updated existing sticky review comment on PR #${prNumber}.`);
-        return;
+        const updateRes = await fetch(
+          `https://api.github.com/repos/${repo}/issues/comments/${existing.id}`,
+          {
+            method: "PATCH",
+            headers: { ...headers, "Content-Type": "application/json" },
+            body: JSON.stringify({ body: commentBody })
+          }
+        );
+        if (updateRes.ok) {
+          console.log(`\u2705 Updated existing sticky review comment on PR #${prNumber}.`);
+          return;
+        }
       }
     }
     const postRes = await fetch(
@@ -41945,7 +41947,7 @@ async function fetchStageDurations(repo, runId, token) {
 }
 
 // src/github/stickyComment.ts
-async function updateOrCreateStickyComment(ciSummaryMarkdown, token, repo, prNumber, commentTag = DEFAULT_COMMENT_TAG) {
+async function updateOrCreateStickyComment(ciSummaryMarkdown, token, repo, prNumber, commentTag = DEFAULT_COMMENT_TAG, sticky = true) {
   if (!token || !prNumber || !repo) {
     console.log("\u2139\uFE0F  Skipping PR comment update: Missing GITHUB_TOKEN, PR_NUMBER, or REPO_FULL_NAME.");
     return;
@@ -41958,68 +41960,70 @@ async function updateOrCreateStickyComment(ciSummaryMarkdown, token, repo, prNum
     "User-Agent": "ReviewGround-CI-Summary"
   };
   try {
-    let existing;
-    let page = 1;
-    const MAX_PAGES = 10;
-    while (!existing && page <= MAX_PAGES) {
-      const listRes = await fetch(
-        `https://api.github.com/repos/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
-        { headers }
-      );
-      if (!listRes.ok) {
-        console.warn(`\u26A0\uFE0F Could not list comments for PR #${prNumber}: HTTP ${listRes.status}`);
-        break;
+    if (sticky) {
+      let existing;
+      let page = 1;
+      const MAX_PAGES = 10;
+      while (!existing && page <= MAX_PAGES) {
+        const listRes = await fetch(
+          `https://api.github.com/repos/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
+          { headers }
+        );
+        if (!listRes.ok) {
+          console.warn(`\u26A0\uFE0F Could not list comments for PR #${prNumber}: HTTP ${listRes.status}`);
+          break;
+        }
+        const comments = await listRes.json();
+        if (comments.length === 0) break;
+        existing = comments.find((c) => c.body?.includes(commentTag));
+        if (existing || comments.length < 100) break;
+        page++;
       }
-      const comments = await listRes.json();
-      if (comments.length === 0) break;
-      existing = comments.find((c) => c.body?.includes(commentTag));
-      if (existing || comments.length < 100) break;
-      page++;
-    }
-    if (existing && existing.body) {
-      let updatedBody = existing.body;
-      if (updatedBody.includes(CI_SECTION_HEADER)) {
-        const parts = updatedBody.split(CI_SECTION_HEADER);
-        const beforeHeader = parts[0];
-        updatedBody = `${beforeHeader.trimEnd()}
-
-${ciSummaryMarkdown}
-
-${commentTag}`;
-      } else {
-        const tagIndex = updatedBody.indexOf(commentTag);
-        if (tagIndex !== -1) {
-          const beforeTag = updatedBody.slice(0, tagIndex).trimEnd();
-          updatedBody = `${beforeTag}
-
----
+      if (existing && existing.body) {
+        let updatedBody = existing.body;
+        if (updatedBody.includes(CI_SECTION_HEADER)) {
+          const parts = updatedBody.split(CI_SECTION_HEADER);
+          const beforeHeader = parts[0];
+          updatedBody = `${beforeHeader.trimEnd()}
 
 ${ciSummaryMarkdown}
 
 ${commentTag}`;
         } else {
-          updatedBody = `${updatedBody.trimEnd()}
+          const tagIndex = updatedBody.indexOf(commentTag);
+          if (tagIndex !== -1) {
+            const beforeTag = updatedBody.slice(0, tagIndex).trimEnd();
+            updatedBody = `${beforeTag}
 
 ---
 
 ${ciSummaryMarkdown}
 
 ${commentTag}`;
+          } else {
+            updatedBody = `${updatedBody.trimEnd()}
+
+---
+
+${ciSummaryMarkdown}
+
+${commentTag}`;
+          }
         }
-      }
-      const updateRes = await fetch(
-        `https://api.github.com/repos/${repo}/issues/comments/${existing.id}`,
-        {
-          method: "PATCH",
-          headers: { ...headers, "Content-Type": "application/json" },
-          body: JSON.stringify({ body: updatedBody })
+        const updateRes = await fetch(
+          `https://api.github.com/repos/${repo}/issues/comments/${existing.id}`,
+          {
+            method: "PATCH",
+            headers: { ...headers, "Content-Type": "application/json" },
+            body: JSON.stringify({ body: updatedBody })
+          }
+        );
+        if (updateRes.ok) {
+          console.log(`\u2705 Successfully updated Sticky Comment on PR #${prNumber} with CI summary.`);
+          return;
         }
-      );
-      if (updateRes.ok) {
-        console.log(`\u2705 Successfully updated Sticky Comment on PR #${prNumber} with CI summary.`);
-        return;
+        console.warn(`\u26A0\uFE0F Failed to patch existing comment: HTTP ${updateRes.status}`);
       }
-      console.warn(`\u26A0\uFE0F Failed to patch existing comment: HTTP ${updateRes.status}`);
     }
     const newBody = `${ciSummaryMarkdown}
 
@@ -42318,7 +42322,7 @@ ${cleanReviewText}${preMergeChecksBox}${testCoverageSection}${agentPromptBox}${r
     await fs6.promises.appendFile(stepSummaryFile, markdownOutput);
     console.log("\u2705 Review appended to GitHub Actions step summary.");
   }
-  await postOrUpdatePrComment(markdownOutput, token, repo, prNumber, commentTag);
+  await postOrUpdatePrComment(markdownOutput, token, repo, prNumber, commentTag, config2.stickyComment !== false);
   if (config2.enablePruneInlineSuggestions && token && repo && prNumber) {
     await prunePreviousInlineComments(repo, token, prNumber);
   }
@@ -42574,7 +42578,7 @@ ${summaryMarkdown}
 `);
     console.log("\u2705 CI Summary appended to GitHub Actions step summary.");
   }
-  await updateOrCreateStickyComment(summaryMarkdown, token, repo, prNumber, commentTag);
+  await updateOrCreateStickyComment(summaryMarkdown, token, repo, prNumber, commentTag, config2.stickyComment !== false);
   return summaryMarkdown;
 }
 
@@ -42983,6 +42987,7 @@ async function run() {
       repo,
       prNumber,
       commentTag: getOptionalInput("comment-tag", ["REVIEWGROUND_COMMENT_TAG", "COMMENT_TAG"]) || void 0,
+      stickyComment: getBooleanInput("sticky-comment", ["REVIEWGROUND_STICKY_COMMENT", "STICKY_COMMENT"], true),
       runId: getOptionalInput("run-id", ["GITHUB_RUN_ID", "RUN_ID"]) || void 0
     };
     if (mode === "review" || mode === "all" || mode === "both") {

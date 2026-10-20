@@ -928,6 +928,7 @@ Every setting can be passed either as an Action Input (`with:`) or as an Environ
 | **GitHub Check Run**         | `enable-check-run`                | `ENABLE_CHECK_RUN`                                                   |                     `false` — creates pass/fail Check Run (requires `checks: write`)                     |
 | **Extra CI Stages**          | `extra-stages`                    | `REVIEWGROUND_EXTRA_STAGES`, `EXTRA_STAGES`                          |                        — JSON array e.g. `[{"name":"Deploy","result":"success"}]`                        |
 | **Comment Tag**              | `comment-tag`                     | `REVIEWGROUND_COMMENT_TAG`, `COMMENT_TAG`                            |                                   `<!-- reviewground-code-review -->`                                    |
+| **Sticky Comment**           | `sticky-comment`                  | `REVIEWGROUND_STICKY_COMMENT`, `STICKY_COMMENT`                      |                      `true` — in-place comment update (`false` for new comment per commit)                       |
 
 ### Action Outputs
 
