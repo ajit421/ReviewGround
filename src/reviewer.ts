@@ -23,6 +23,7 @@ import {
 } from './utils/actionableSummary.js';
 import { estimateReviewEffort } from './utils/effortEstimator.js';
 import { generatePreMergeChecksBox } from './utils/preMergeChecks.js';
+import { sanitizeMermaidInMarkdown } from './utils/mermaidSanitizer.js';
 import {
   DEFAULT_COMMENT_TAG,
   CI_SECTION_HEADER,
@@ -351,6 +352,9 @@ export async function runReview(config: ReviewerConfig = {}): Promise<ProviderRe
       console.warn('ℹ️ Could not parse inline_suggestions JSON block from AI output.');
     }
   }
+
+  // Auto-heal Mermaid diagrams to prevent GitHub syntax parse errors
+  cleanReviewText = sanitizeMermaidInMarkdown(cleanReviewText);
 
   // Test coverage detection
   let testCoverageSection = '';
