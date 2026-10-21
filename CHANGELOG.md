@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.0](https://github.com/ajit421/ReviewGround/compare/v1.5.0...v1.6.0) (2026-10-21)
+
+
+### Features
+
+* actionable findings banner, ai agent prompt box, and isolated slash commands ([5991eea](https://github.com/ajit421/ReviewGround/commit/5991eea3fdf477f85a5fa9b0341da0262bd853bf))
+* **audit:** comprehensive defect fixes, enterprise merge gates, and performance hardening ([774bc84](https://github.com/ajit421/ReviewGround/commit/774bc8491dc6b17fd9dbbca0e93713569a1efcf3))
+* **audit:** implement remaining audit items — I1, I5, I7, F1, F3, F6 ([dc9319c](https://github.com/ajit421/ReviewGround/commit/dc9319cad1c92682339b0de8bbc0c84b369fac07))
+* **ci:** add skip-on-ci-failure input to pause review on broken builds ([3955714](https://github.com/ajit421/ReviewGround/commit/39557148a612f3f78f4af6d7a223a30ddffe341d))
+* **ci:** enable conditional concurrency cancellation on non-main branches ([905c33b](https://github.com/ajit421/ReviewGround/commit/905c33b74bfdd4dc2c6699c1640da32eaf57c261))
+* **ci:** enable conditional concurrency cancellation on non-main branches ([3d999a8](https://github.com/ajit421/ReviewGround/commit/3d999a895da11336c51d061bbb79f81f7ce9621b))
+* **commands:** support conversational PR comment questions and queries ([b384f88](https://github.com/ajit421/ReviewGround/commit/b384f88364793fc63c0ae2846c6a390917a8a6c9))
+* **comments:** add configurable sticky-comment toggle for commit-by-commit timeline ([5ebacae](https://github.com/ajit421/ReviewGround/commit/5ebacae12bb214b4a13466a72279b723abceb537))
+* **context:** add lightweight repo structure grounder to eliminate utility hallucinations ([65f0b84](https://github.com/ajit421/ReviewGround/commit/65f0b84cf500346be96f09c061020404de124682))
+* **core:** initialize ReviewGround universal AI reviewer action with Node 24 & TypeScript 7 ([e8a17e2](https://github.com/ajit421/ReviewGround/commit/e8a17e25579f542fb3fd642cde0e873634d483bc))
+* **docs:** update action references to arungupta1526/ReviewGround and enable zero-commit variable resolution ([dbcd575](https://github.com/ajit421/ReviewGround/commit/dbcd57508c66ce9eee8286601fc4ffc6068d987e))
+* dynamic CI job discovery, smart CI auto-skip, clear error notices, and Google Release Please ([3eaf670](https://github.com/ajit421/ReviewGround/commit/3eaf670f82f48aceb265e741ee0df6273e6b4fcb))
+* **github:** add configurable enable-prune-inline-suggestions action input ([245b801](https://github.com/ajit421/ReviewGround/commit/245b80125af15971b82ac606137730c022605e6b))
+* **github:** auto-resolve outdated review threads and enforce pagination bounds ([403052d](https://github.com/ajit421/ReviewGround/commit/403052d92cf9734e94ddff55dd323a82e564a4c9))
+* **metrics:** add model-aware pricing, 5x architecture diagram, and file tree docs ([6bcf93b](https://github.com/ajit421/ReviewGround/commit/6bcf93bcbb2910d8ad9ba0395ffc40149120caca))
+* **metrics:** track cumulative multi-run PR spend and per-CI cost breakdown ([60ab391](https://github.com/ajit421/ReviewGround/commit/60ab391a5658bd292b2fdd7d0a715a9615c36a46))
+* **prompts:** harden ai agent prompts with prompt injection defense and validation commands ([75bddff](https://github.com/ajit421/ReviewGround/commit/75bddff92dcd3b2e3e3c3521b5d114ac2723a54f))
+* **providers:** add custom fallback models and expand built-in fallback chains ([86dcbfa](https://github.com/ajit421/ReviewGround/commit/86dcbfacba55ec4a4f99799729621c9d271ff18c))
+* **providers:** add first-class OpenRouterProvider and preserve custom third-party routing ([e18675b](https://github.com/ajit421/ReviewGround/commit/e18675b0bdbd956d79556f771a000f6170ef35ce))
+* **providers:** add smart model-to-provider detection and document fallback chains ([4a02093](https://github.com/ajit421/ReviewGround/commit/4a0209348fb6929dd263bed519b70dc8d3d999ac))
+* **providers:** enforce custom model override hierarchy and add dependabot automation ([4c66959](https://github.com/ajit421/ReviewGround/commit/4c66959dc0b39d7e528ad9a4fd57d0f0d8b5a152))
+* review effort estimator, pre-merge invariant checks, and prompt injection defense ([a73add9](https://github.com/ajit421/ReviewGround/commit/a73add9fc8bdef8217e71222eb63aa98e0455564))
+* **reviewer:** add actionable findings banner, ai agent prompt box, and review scope dropdown ([ec5a1ea](https://github.com/ajit421/ReviewGround/commit/ec5a1ea6bc714a5be5c7d7bbe4a0868f857a1cdb))
+* **reviewer:** add code review effort estimator and pre-merge invariant checks ([7f9b2d9](https://github.com/ajit421/ReviewGround/commit/7f9b2d98638d687591df6245a67a446263988b37))
+* **reviewer:** brand review header with ReviewGround and add collapsible demo screenshots to README ([2a765db](https://github.com/ajit421/ReviewGround/commit/2a765db9fecad57e83f8a0f060cb17eac8dc4e18))
+* **reviewer:** implement audit bug fixes, granular configuration, and custom guidelines ([b25c5f4](https://github.com/ajit421/ReviewGround/commit/b25c5f4cbaf5bbe7cc3a2360018e7315f8c35969))
+* **rules:** auto-ingest guidelines from AGENTS.md, .cursorrules, and CLAUDE.md ([000b5d5](https://github.com/ajit421/ReviewGround/commit/000b5d59f1fb029ab9821fdeedd8ad2c7b56f3b0))
+* **security:** implement pre-flight diff secret and credential masking ([c67bddf](https://github.com/ajit421/ReviewGround/commit/c67bddf538ce0b7979f30666c21d14123e08b860))
+* **summary:** add dynamic CI workflow job discovery and secret aliases ([71177de](https://github.com/ajit421/ReviewGround/commit/71177def048863acd8110134df8751bf24b053cd))
+* **summary:** add smart CI table auto-skip and clear PR setup/error notices ([a8dfbed](https://github.com/ajit421/ReviewGround/commit/a8dfbed25d7717326dbb3b121254f25e51796dc2))
+* **v1.3.0:** complete 7-feature competitive suite (slash commands, walkthrough describer, multi-registry, cost footer, smart diff, OWASP, test stubs) ([1130da4](https://github.com/ajit421/ReviewGround/commit/1130da496ebf7e70cae5965b4baf815d5d21b82d))
+
+
+### Bug Fixes
+
+* **action:** shorten action.yml description under 125 chars for Marketplace ([fd1c2ba](https://github.com/ajit421/ReviewGround/commit/fd1c2ba40d50f2b0f898e9afef3a46ce8371b480))
+* **action:** shorten action.yml description under 125 chars for Marketplace compatibility ([c9148b1](https://github.com/ajit421/ReviewGround/commit/c9148b1d83f30e695e836723bd7fd62a9b4b42a8))
+* **checks:** ensure unicode surrogate pair safe slicing for check runs ([2ba6928](https://github.com/ajit421/ReviewGround/commit/2ba69287fff246b7c64b96dbc8034b9f161bdaad))
+* **github:** sanitize repo parameters, add execSync buffer guards, and add modular unit tests ([77f330c](https://github.com/ajit421/ReviewGround/commit/77f330cbb13538547957510d23bf43d22cf7b48b))
+* **marketplace:** enforce &lt;125 char action description ceiling ([c47801f](https://github.com/ajit421/ReviewGround/commit/c47801f04a1ad6e0e2afe594329fe724843b3f4d))
+* **providers:** update Gemini and Groq models to verified active endpoints ([ca55b94](https://github.com/ajit421/ReviewGround/commit/ca55b943927a44b154e386fda8abdafbe2769a80))
+* **reviewer:** auto-heal LLM arrow syntax glitches in Mermaid sequence diagrams ([b46996e](https://github.com/ajit421/ReviewGround/commit/b46996e609c4f548b248c0b2be135672a3d09e0d))
+* **reviewer:** auto-heal LLM arrow syntax glitches in Mermaid sequence diagrams ([ca623b1](https://github.com/ajit421/ReviewGround/commit/ca623b17e74a392809f4e24eec857b46f8e5b46a))
+* **reviewer:** prioritize PR diff API over local diff and auto-detect comment mode ([d488719](https://github.com/ajit421/ReviewGround/commit/d488719385d34ac443237861a45cc2dd30aaf99f))
+* **reviewer:** sanitize nested code fences and details tags in ai agent prompts ([5109723](https://github.com/ajit421/ReviewGround/commit/51097237b755de1c6e7e59e4642864b8f53b6516))
+* **security:** batch resolve review threads and sanitize pr numbers ([193b289](https://github.com/ajit421/ReviewGround/commit/193b289c10299d9252cfc9096bf5ed4d08e3de0e))
+* **security:** eliminate os command injection in git diff using execFileSync ([5d8e9ac](https://github.com/ajit421/ReviewGround/commit/5d8e9ac025133329eb33d190580bbe6c2ba5d0cd))
+* **security:** sanitize suggestion backticks and improve pr description regex ([c2e8e43](https://github.com/ajit421/ReviewGround/commit/c2e8e4374235d9b1a2a913cbe62a157f4662ac42))
+* **summary:** prevent markdown backtick collision in ai agent prompt box ([8c8b02d](https://github.com/ajit421/ReviewGround/commit/8c8b02dfcfeada476f2ba47d535eab19a067b950))
+* **summary:** resolve prompt box markdown collision & feat(comments): add sticky-comment toggle ([38378b5](https://github.com/ajit421/ReviewGround/commit/38378b5b8f27980b6e20270963dac566a8afa750))
+* **workflows:** guard floating tag update and isolate slash commands ([0f81d08](https://github.com/ajit421/ReviewGround/commit/0f81d082c81560a46683cb8a263cfb99009db0b1))
+
 ## [1.5.0](https://github.com/arungupta1526/ReviewGround/compare/v1.4.0...v1.5.0) (2026-10-19)
 
 
